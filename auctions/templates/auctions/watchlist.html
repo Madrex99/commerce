@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+    
+    {% for information in data %}
+      <a href="{% url 'listing' product_id=information.id%}">
+        <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{information.image}}" class="img-fluid rounded-start" style="width: 400px;" alt="{{information.text}}">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h3 class="card-title">{{information.title}}</h5>
+                  <p class="price" style="font-weight: 500;">
+                    <span style="font-weight: bold;">Price:</span> ${{information.price}}
+                  </p>
+                  <p class="card-text">{{information.text}}.</p>
+                </div>
+              </div>
+            </div>
+        </div>
+      </a>
+    {% empty %}
+    <div class="alert alert-dark" role="alert" style="max-width: 50%;">
+        You have no item on watchlist!
+    </div>
+    {% endfor %}
+
+{% endblock %}

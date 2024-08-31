@@ -1,0 +1,151 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .comment-section {
+            max-width: auto;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .comment {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .comment:last-child {
+            border-bottom: none;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .comment-author {
+            font-weight: bold;
+        }
+        .comment-date {
+            color: #777;
+            font-size: 0.9em;
+        }
+        .comment-body {
+            margin-bottom: 10px;
+        }
+        .comment-form {
+            margin-top: 20px;
+        }
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .comment-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .comment-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <div class="yo">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger" role="alert" style="max-width: 50%;">
+                        {{message}}
+                    </div>
+                {% elif message.tags == 'success' %}
+                    <div class="alert alert-success" role="alert" style="max-width: 50%;">
+                        {{message}}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <div class="listing" style="margin-left: 7px;">
+            <h2> {{data.title}} </h2>
+            {% if user.is_authenticated %}
+                {% if watchlisted %}
+                    <form action="{% url 'watchlist' product_id=data.id%}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove">
+                        <button type="submit" class="btn btn-primary btn-sm" id="Watchlist"
+                            style="font-size: 13px; padding: 0 4px 0 4px ; font-weight: 600; display: block; margin: 20px 0 20px;">
+                            Watchlist(1)
+                        </button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'watchlist' product_id=data.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        <button type="submit" class="btn btn-secondary btn-sm" id="Watchlist"
+                            style="font-size: 13px; padding: 0 4px 0 4px ; font-weight: 600; display: block; margin: 20px 0 20px;">
+                            Watchlist
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            <img src="{{data.image}}" alt="{{data.text}}">
+            <p class="h6" style="margin: 20px 0 20px 0;"> {{data.text}} </p>
+            <p class="h3" style="margin-bottom: 20px;"> ${{data.price}} </p>
+            {% if close %}
+                <form action="{% url 'close' product_id=data.id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-danger" type="submit"  value="Close Auction" style="display: block; margin-top: 20px;">
+                </form>
+            {% else %}
+                <form action="{% url 'bid' product_id=data.id %}" method="post">
+                    {% csrf_token %}
+                    <div id="passwordHelpBlock" class="form-text" style="font-size: 14px; margin-bottom: 7px;">
+                        bid(s) so far. Your bid is the current bid.
+                    </div>
+                    <input type="number" placeholder="Bid" id="inputPassword5" class="form-control" name="new_bid" aria-describedby="passwordHelpBlock">
+                    <input class="btn btn-primary" type="submit"  value="Place Bid" style="display: block; margin-top: 20px;">
+                </form>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 20px; margin-left: 7px;">
+            <h3>Details</h3>
+            <ul>
+                <li style="font-family: Arial, Helvetica, sans-serif;">Listed by: {{data.user}}</li>
+                <li style="font-family: Arial, Helvetica, sans-serif;">Category: {{data.category}}</li>
+
+            </ul>
+        </div>
+        <div class="comment-section">
+            {% for comment in comments %}
+                <h2>Comments</h2>
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.user }}</span>
+                        <span class="comment-date"> {{ comment.timestamp }} </span>
+                    </div>
+                    <div class="comment-body">
+                        <p>{{ comment.comment }}.</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <form class="comment-form" action="{% url 'comment' product_id=data.id%}" method="post">
+                {% csrf_token %}
+                <h3>Add a Comment</h3>
+                <textarea placeholder="Write your comment here..." rows="4" name="comment"></textarea>
+                <button type="submit">Submit Comment</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

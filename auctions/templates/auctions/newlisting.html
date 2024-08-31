@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <form action="{% url 'newlisting' %}" method="post">
+        {% csrf_token %}
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert" style="max-width: 50%;">
+                {{error_message}}
+            </div>
+        {% endif %}
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Title</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" name="title" placeholder="Title..." required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="text" placeholder="Description..." required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Image URL (optional)</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" name="image" placeholder="Image url...">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Starting bid</label>
+            <input type="number" class="form-control" id="exampleFormControlInput1" name="price" placeholder="Price..." required>
+        </div>
+        <select name="category" class="form-select" aria-label="Default select example" style="border: 1px solid #ced4da;">
+            <option selected disabled>Open this select menu</option>
+            {% for option in options %}
+                <option value="{{option}}"> {{option}} </option>
+            {% endfor %}
+        </select>
+        <input class="btn btn-primary" type="submit"  value="Submit" style="display: block; margin-top: 30px;">
+    </form>
+{% endblock %}
