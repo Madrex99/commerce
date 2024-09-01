@@ -4,19 +4,19 @@
     <h2>Won Auction</h2>
 
     {% for information in data %}
-      <a href="{% url 'close' product_id=information.id%}">
+      <a href="{% url 'close' product_id=information.id %}">
         <div class="card mb-3">
             <div class="row g-0">
               <div class="col-md-4">
-                <img src="{{information.image}}" class="img-fluid rounded-start" style="width: 400px;" alt="{{information.text}}">
+                <img src="{{ information.image }}" class="img-fluid rounded-start" style="width: 400px;" alt="{{ information.text }}">
               </div>
               <div class="col-md-8">
                 <div class="card-body">
-                  <h3 class="card-title">{{information.title}}</h5>
+                  <h3 class="card-title">{{ information.title }}</h3> <!-- Fixed closing tag -->
                   <p class="price" style="font-weight: 500;">
-                    <span style="font-weight: bold;">Price:</span> ${{information.price}}
+                    <span style="font-weight: bold;">Price:</span> ${{ information.price }}
                   </p>
-                  <p class="card-text">{{information.text}}.</p>
+                  <p class="card-text">{{ information.text }}.</p>
                 </div>
               </div>
             </div>
@@ -24,7 +24,7 @@
       </a>
     {% empty %}
       <div class="alert alert-dark" role="alert" style="max-width: 50%;">
-          You haven't win any Auction!
+          You haven't won any auction!
       </div>
     {% endfor %}
 

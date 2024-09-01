@@ -108,7 +108,7 @@ def newlisting(request):
 
 
 def listing(request, product_id):
-    listing = Listings.objects.get(pk=product_id)
+    listing = get_object_or_404(Listings, pk=product_id)
     user = request.user
 
     watchlisted = listing.watchlist.filter(id=user.id).exists()
@@ -222,16 +222,22 @@ def bid_function(request, product_id):
 @login_required
 def end_bid(request, product_id):
     if request.method == 'POST':
-        listing = Listings.objects.get(pk=product_id)
+        try:
+            listing = Listings.objects.get(pk=product_id)
+        except:
+            return HttpResponseRedirect(reverse("index"))
         user = request.user
         try:
-            bids = Bids.objects.filter(id=product_id)
+            bids = Bids.objects.filter(listingbid=listing)
         except:
             messages.error(login_required, "There is no bid on that listing")
             return HttpResponseRedirect(reverse("listing", args=(product_id,)))
         
         highest_bid = bids.order_by('-bid').first()
-        highest_bidder = highest_bid.user
+        try:
+            highest_bidder = highest_bid.user
+        except:
+            return HttpResponseRedirect(reverse("index"))
 
         data = Auction(
             id = product_id,
@@ -246,22 +252,28 @@ def end_bid(request, product_id):
         data.save()
         listing.delete()
 
+        win_auction = Auction.objects.filter(user=user)
         return render(request, "auctions/auctionlist.html", {
-            "data": data
+            "data": win_auction
         })
     else:
-        print("yes")
-        auction_won = Auction.objects.get(id=product_id)
+       
+        try:
+            auction_won = Auction.objects.filter(id=product_id)
+        except:
+            return HttpResponseRedirect(reverse("index"))
+        if auction_won.exists():
+            data1 = auction_won.first()
         print(auction_won)
         return render(request, "auctions/auctions.html", {
-            "data": auction_won
+            "data": data1
         })
     
 @login_required
 def auction_page(request):
-
+    user = request.user
     try:
-        listings = Auction.objects.all()
+        listings = Auction.objects.filter(user=user)
     except:
         messages.error(login_required, "There is no auction won!")
         return HttpResponseRedirect(reverse("index"))
